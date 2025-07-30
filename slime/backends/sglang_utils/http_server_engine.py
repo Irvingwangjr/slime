@@ -71,9 +71,12 @@ class HttpServerEngineAdapter:
         print(f"Launch HttpServerEngineAdapter at: {self.server_args.host}:{self.server_args.port}")
         self.process = launch_server_process(self.server_args)
         if self.node_rank == 0 and self.router_ip and self.router_port:
+            print("ready to ping rounter")
+            print(f"http://{self.router_ip}:{self.router_port}/add_worker?url=http://{self.server_args.host}:{self.server_args.port}")
             requests.post(
                 f"http://{self.router_ip}:{self.router_port}/add_worker?url=http://{self.server_args.host}:{self.server_args.port}"
             )
+            print("done ping router")
 
     def _make_request(self, endpoint: str, payload: Optional[dict] = None):
         """Make a POST request to the specified endpoint with the given payload.

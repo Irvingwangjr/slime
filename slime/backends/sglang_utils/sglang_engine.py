@@ -66,7 +66,7 @@ class SglangEngine:
             print(f"Warning: The following arguments is not supported in the current sglang: {unused_keys}.")
             for key in unused_keys:
                 kwargs.pop(key)
-
+        print("ready to init http server")
         self.llm = HttpServerEngineAdapter(
             router_ip=args.sglang_router_ip, router_port=args.sglang_router_port, **kwargs
         )

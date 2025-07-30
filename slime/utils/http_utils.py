@@ -35,6 +35,9 @@ def get_host_info():
     hostname = socket.gethostname()
 
     local_ip = socket.gethostbyname(hostname)
+    import os
+    if "MLP_HOST" in os.environ:
+        return hostname,os.environ["MLP_HOST"]
 
     return hostname, local_ip
 

@@ -173,7 +173,7 @@ async def abort(args, rollout_id: int):
     # abort all the requests
     for url in response["urls"]:
         print(f"Abort request for {url}", flush=True)
-        await post(f"{url}/abort_request", {"abort_all": True}, use_http2=False)
+        await post(f"{url}/abort_request", {"rid": ""}, use_http2=False)
 
     # make sure all the pending tasks are finished
     count = 0

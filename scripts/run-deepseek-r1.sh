@@ -1,17 +1,8 @@
 #!/bin/bash
 
-# for rerun the task
-pkill -9 sglang
-sleep 3
-ray stop --force
-pkill -9 ray
-pkill -9 python
-sleep 3
-pkill -9 ray
-pkill -9 python
-
 set -ex
 
+BASE_DIR=/demo-huabei2/common-models/deepseek-ai
 # will prevent ray from buffering stdout/stderr
 export PYTHONBUFFERED=16
 
@@ -36,7 +27,7 @@ CKPT_ARGS=(
 )
 
 ROLLOUT_ARGS=(
-   --prompt-data $BASE_DIR/dapo-math-17k/dapo-math-17k.jsonl
+   --prompt-data /root/dapo-math-17k/dapo-math-17k.jsonl
    --input-key prompt
    --label-key label
    --apply-chat-template
@@ -57,7 +48,7 @@ ROLLOUT_ARGS=(
 
 EVAL_ARGS=(
    --eval-interval 20
-   --eval-prompt-data aime /mnt/o1_alicloud/personal/zzl/rl_data/aime-2024.jsonl
+   --eval-prompt-data aime  /root/aime-2024/aime-2024.jsonl
    --n-samples-per-eval-prompt 8
    --eval-max-response-len 32768
    --eval-top-p 0.7
@@ -146,20 +137,21 @@ MISC_ARGS=(
 )
 
 # launch the master node of ray in container
-export no_proxy="127.0.0.1,${MASTER_ADDR}"
-ray start --head --node-ip-address ${MASTER_ADDR} --num-gpus 8 --disable-usage-stats
+# export no_proxy="127.0.0.1,${MASTER_ADDR}"
+# ray start --head --node-ip-address ${MASTER_ADDR} --num-gpus 8 --disable-usage-stats
 
 
-ray job submit --address="http://127.0.0.1:8265" \
+ray job submit \
    --runtime-env-json='{
      "env_vars": {
         "no_proxy": "localhost,127.0.0.1,0.0.0.0,${MASTER_ADDR}",
         "MASTER_ADDR": "${MASTER_ADDR}",
-        "PYTHONPATH": "/root/Megatron-LM/",
+        "PYTHONPATH": "/demo-huabei2/wxc/workspace/src/Megatron-LM/",
         "CUDA_DEVICE_MAX_CONNECTIONS": "1",
         "LD_LIBRARY_PATH": "/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/sgl-workspace/nvshmem/install/lib/"
      }
    }' \
+   --working-dir="/demo-huabei2/wxc/workspace/src/slime" \
    -- python3 train.py \
    --actor-num-nodes 16 \
    --actor-num-gpus-per-node 8 \

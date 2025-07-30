@@ -19,6 +19,7 @@ class RolloutRayActor(RayActor):
         self.rank = rank
 
     def init(self, dist_init_addr, port, nccl_port):
+        print("start init")
         # build infer engine
         self.infer_engine = SglangEngine(
             args=self.args,
@@ -31,6 +32,7 @@ class RolloutRayActor(RayActor):
         if self.args.offload:
             # offload the engine to the CPU
             self.infer_engine.sleep()
+        print(f"finish init")
 
     def init_process_group(self, master_address, master_port, rank_offset, world_size, group_name, backend):
         return self.infer_engine.init_process_group(
